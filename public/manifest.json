@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "SumTube",
+  "version": "0.1.0",
+  "description": "Reworks YouTube into a lower-stimulation reading-first experience.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.youtube.com/*", "https://m.youtube.com/*"],
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "SumTube"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*", "https://m.youtube.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

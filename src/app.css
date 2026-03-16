@@ -1,0 +1,168 @@
+:root {
+  --ink: #131313;
+  --muted: #5c5c56;
+  --paper: #f4efe4;
+  --panel: rgba(255, 252, 245, 0.78);
+  --edge: rgba(19, 19, 19, 0.12);
+  --accent: #d9481c;
+  --accent-strong: #8a2c11;
+  --shadow: 0 18px 40px rgba(39, 27, 16, 0.16);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(217, 72, 28, 0.2),
+      transparent 34%
+    ),
+    linear-gradient(180deg, #efe4cf 0%, var(--paper) 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 380px;
+  min-height: 580px;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.shell {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.hero,
+.panel,
+.notes {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.hero {
+  padding: 22px 20px 18px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent-strong);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+h1,
+h2,
+p,
+ul {
+  margin: 0;
+}
+
+h1 {
+  font-size: 2rem;
+  line-height: 1.02;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.lede,
+.status,
+.notes li {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.panel {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.field span {
+  font-size: 0.88rem;
+}
+
+.field input {
+  border: 1px solid var(--edge);
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.toggle {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+  align-items: start;
+  color: var(--ink);
+}
+
+.toggle input {
+  margin-top: 3px;
+}
+
+button {
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), #ff8d51);
+  color: white;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.03);
+}
+
+.status {
+  font-size: 0.92rem;
+}
+
+.notes {
+  padding: 18px;
+}
+
+.notes ul {
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+@media (max-width: 440px) {
+  body {
+    min-width: 320px;
+  }
+
+  .shell {
+    padding: 14px;
+  }
+}
