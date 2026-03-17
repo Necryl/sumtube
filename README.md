@@ -45,8 +45,24 @@ bun run check
 ## Current architecture
 
 The content script already applies placeholder detox behavior on YouTube pages.
-The background worker already exposes message handlers for summary and article requests.
+The background worker already exposes message handlers for OAuth status, OAuth sign-in/out, and summary/article requests.
 Right now those handlers return deterministic placeholder text so the extension flow can be tested before Gemini wiring is added.
+
+## OAuth setup for option 2
+
+This project now uses `chrome.identity` to sign in with Google account context from the extension popup.
+
+1. In Google Cloud Console, create an OAuth client of type **Chrome Extension**.
+2. Paste that client ID into `public/manifest.json` at `oauth2.client_id`.
+3. Rebuild and reload the extension in Chrome.
+
+Current OAuth scopes are minimal identity scopes:
+
+- `openid`
+- `email`
+- `profile`
+
+This is enough to bind extension behavior to a selected Google account. You still need to wire actual Gemini requests on top of this token flow in `src/background/index.ts`.
 
 ## Important constraint
 
@@ -55,4 +71,4 @@ For local prototyping you can store a user-provided key in extension storage, bu
 
 ## Suggested next step
 
-The next meaningful task is to replace the placeholder background responses with real Gemini calls plus response caching keyed by YouTube video ID.
+Replace placeholder summary/article handlers with real Gemini requests in `src/background/index.ts`, then cache responses by YouTube video ID.

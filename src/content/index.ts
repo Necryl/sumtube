@@ -1,5 +1,4 @@
 type ExtensionSettings = {
-  geminiApiKey: string;
   grayscaleThumbnails: boolean;
   hideShorts: boolean;
   replaceThumbnails: boolean;
@@ -7,7 +6,6 @@ type ExtensionSettings = {
 };
 
 const defaultSettings: ExtensionSettings = {
-  geminiApiKey: "",
   grayscaleThumbnails: true,
   hideShorts: true,
   replaceThumbnails: true,

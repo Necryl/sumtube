@@ -3,8 +3,16 @@
   "name": "SumTube",
   "version": "0.1.0",
   "description": "Reworks YouTube into a lower-stimulation reading-first experience.",
-  "permissions": ["storage"],
-  "host_permissions": ["https://www.youtube.com/*", "https://m.youtube.com/*"],
+  "permissions": ["storage", "identity"],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://m.youtube.com/*",
+    "https://www.googleapis.com/*"
+  ],
+  "oauth2": {
+    "client_id": "REPLACE_WITH_GOOGLE_OAUTH_CLIENT_ID.apps.googleusercontent.com",
+    "scopes": ["openid", "email", "profile"]
+  },
   "action": {
     "default_popup": "index.html",
     "default_title": "SumTube"

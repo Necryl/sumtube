@@ -100,6 +100,51 @@ h2 {
   gap: 14px;
 }
 
+.auth-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--edge);
+  border-radius: 16px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.auth-title {
+  font-weight: 700;
+}
+
+.auth-copy {
+  color: var(--muted);
+  line-height: 1.4;
+  font-size: 0.92rem;
+}
+
+.auth-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-pill {
+  font-size: 0.82rem;
+  line-height: 1.2;
+  color: var(--muted);
+  border: 1px solid var(--edge);
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  padding: 8px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.auth-pill.connected {
+  color: #1f5e2f;
+  border-color: rgba(31, 94, 47, 0.24);
+  background: rgba(61, 147, 84, 0.14);
+}
+
 .field {
   display: grid;
   gap: 8px;
@@ -143,6 +188,11 @@ button:hover {
   filter: brightness(1.03);
 }
 
+button:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
 .status {
   font-size: 0.92rem;
 }
@@ -164,5 +214,9 @@ button:hover {
 
   .shell {
     padding: 14px;
+  }
+
+  .auth-row {
+    grid-template-columns: 1fr;
   }
 }

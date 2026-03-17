@@ -2,15 +2,23 @@
   import { onMount } from 'svelte'
 
   type ExtensionSettings = {
-    geminiApiKey: string
     grayscaleThumbnails: boolean
     hideShorts: boolean
     replaceThumbnails: boolean
     articleMode: boolean
   }
 
+  type AuthState = {
+    isAuthenticated: boolean
+    email: string
+  }
+
+  type BackgroundResponse = {
+    auth?: AuthState
+    error?: string
+  }
+
   const defaultSettings: ExtensionSettings = {
-    geminiApiKey: '',
     grayscaleThumbnails: true,
     hideShorts: true,
     replaceThumbnails: true,
@@ -18,7 +26,9 @@
   }
 
   let settings = $state<ExtensionSettings>({ ...defaultSettings })
-  let status = $state('Ready to configure the extension.')
+  let auth = $state<AuthState>({ isAuthenticated: false, email: '' })
+  let isAuthBusy = $state(false)
+  let status = $state('Connect a Google account to prepare OAuth-based Gemini access.')
 
   onMount(async () => {
     if (typeof chrome === 'undefined' || !chrome.storage?.sync) {
@@ -28,12 +38,13 @@
 
     const stored = (await chrome.storage.sync.get(defaultSettings)) as ExtensionSettings
     settings = {
-      geminiApiKey: String(stored.geminiApiKey ?? ''),
       grayscaleThumbnails: Boolean(stored.grayscaleThumbnails ?? true),
       hideShorts: Boolean(stored.hideShorts ?? true),
       replaceThumbnails: Boolean(stored.replaceThumbnails ?? true),
       articleMode: Boolean(stored.articleMode ?? true),
     }
+
+    await refreshAuthStatus()
   })
 
   async function saveSettings() {
@@ -44,6 +55,69 @@
 
     await chrome.storage.sync.set(settings)
     status = 'Settings saved. Reload the extension in Chrome to apply changes.'
+  }
+
+  async function sendBackgroundMessage(type: 'AUTH_STATUS' | 'AUTH_SIGN_IN' | 'AUTH_SIGN_OUT') {
+    const response = (await chrome.runtime.sendMessage({ type })) as BackgroundResponse
+    return response
+  }
+
+  async function refreshAuthStatus() {
+    const response = await sendBackgroundMessage('AUTH_STATUS')
+
+    if (response.error) {
+      status = `Auth check failed: ${response.error}`
+      return
+    }
+
+    if (response.auth) {
+      auth = response.auth
+      status = response.auth.isAuthenticated
+        ? `Signed in as ${response.auth.email}.`
+        : 'Not signed in. Use Google sign-in below.'
+    }
+  }
+
+  async function signIn() {
+    isAuthBusy = true
+
+    try {
+      const response = await sendBackgroundMessage('AUTH_SIGN_IN')
+
+      if (response.error) {
+        status = `Sign-in failed: ${response.error}`
+        return
+      }
+
+      if (response.auth) {
+        auth = response.auth
+        status = response.auth.isAuthenticated
+          ? `Signed in as ${response.auth.email}.`
+          : 'Sign-in did not complete.'
+      }
+    } finally {
+      isAuthBusy = false
+    }
+  }
+
+  async function signOut() {
+    isAuthBusy = true
+
+    try {
+      const response = await sendBackgroundMessage('AUTH_SIGN_OUT')
+
+      if (response.error) {
+        status = `Sign-out failed: ${response.error}`
+        return
+      }
+
+      if (response.auth) {
+        auth = response.auth
+        status = 'Signed out.'
+      }
+    } finally {
+      isAuthBusy = false
+    }
   }
 </script>
 
@@ -58,14 +132,25 @@
   </section>
 
   <section class="panel">
-    <label class="field">
-      <span>Gemini API key</span>
-      <input
-        bind:value={settings.geminiApiKey}
-        type="password"
-        placeholder="Paste a key for later background-worker integration"
-      />
-    </label>
+    <div class="auth-card">
+      <p class="auth-title">Google account</p>
+      <p class="auth-copy">
+        OAuth identity is handled via Chrome Identity API. This gives SumTube an account-aware token
+        flow that can follow account switching through sign-in/sign-out.
+      </p>
+
+      <div class="auth-row">
+        <span class:connected={auth.isAuthenticated} class="auth-pill">
+          {auth.isAuthenticated ? `Connected: ${auth.email}` : 'Not connected'}
+        </span>
+
+        {#if auth.isAuthenticated}
+          <button onclick={signOut} type="button" disabled={isAuthBusy}>Disconnect</button>
+        {:else}
+          <button onclick={signIn} type="button" disabled={isAuthBusy}>Sign in with Google</button>
+        {/if}
+      </div>
+    </div>
 
     <label class="toggle">
       <input bind:checked={settings.grayscaleThumbnails} type="checkbox" />
@@ -95,8 +180,8 @@
     <h2>What is wired up now</h2>
     <ul>
       <li>Manifest V3 scaffold with popup, background worker, and YouTube content script.</li>
-      <li>Content script detoxes the page with placeholders so you can test the extension flow.</li>
-      <li>Background worker exposes message handlers where Gemini summarization will go next.</li>
+      <li>OAuth status/sign-in/sign-out messaging through Chrome Identity API is implemented.</li>
+      <li>Summary/article responses are still placeholders until Gemini API calls are attached.</li>
     </ul>
   </section>
 </main>
